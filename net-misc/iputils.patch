@@ -1,0 +1,25 @@
+--- iputils-99999999.ebuild.old	2013-03-29 12:37:13.740974583 +0100
++++ iputils-99999999.ebuild	2013-03-29 12:38:22.575723125 +0100
+@@ -11,3 +11,3 @@ EAPI="4"
+ 
+-inherit flag-o-matic eutils toolchain-funcs fcaps
++inherit flag-o-matic eutils toolchain-funcs fcaps usr-gentoo
+ if [[ ${PV} == "99999999" ]] ; then
+@@ -78,5 +78,3 @@ ipv6() { usex ipv6 "$*" '' ; }
+ src_install() {
+-	into /
+ 	dobin arping ping $(ipv6 ping6)
+-	into /usr
+ 	dobin clockdiff
+@@ -92,2 +90,4 @@ src_install() {
+ 	use doc && dohtml doc/*.html
++
++	usr_wrap_bin arping ping $(ipv6 ping6)
+ }
+@@ -96,4 +96,4 @@ pkg_postinst() {
+ 	fcaps cap_net_raw \
+-		bin/{ar,}ping \
+-		$(ipv6 bin/ping6) \
++		usr/bin/{ar,}ping \
++		$(ipv6 usr/bin/ping6) \
+ 		usr/bin/clockdiff
