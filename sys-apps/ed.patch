@@ -1,0 +1,28 @@
+Index: ed-1.7-r1.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/ed/ed-1.7-r1.ebuild,v
+retrieving revision 1.1
+diff -u -B -d -u -p -r1.1 ed-1.7-r1.ebuild
+--- ed-1.7-r1.ebuild	26 Nov 2012 17:34:42 -0000	1.1
++++ ed-1.7-r1.ebuild	30 Mar 2013 22:00:38 -0000
+@@ -4,7 +4,7 @@
+ 
+ EAPI="4"
+ 
+-inherit eutils toolchain-funcs
++inherit eutils toolchain-funcs usr-gentoo
+ 
+ DESCRIPTION="Your basic line editor"
+ HOMEPAGE="http://www.gnu.org/software/ed/"
+@@ -23,5 +23,10 @@ src_prepare() {
+ 
+ src_configure() {
+ 	tc-export CC
+-	econf --bindir="${EPREFIX}/bin"
++	econf
++}
++
++src_install() {
++	default
++	usr_wrap_all
+ }
