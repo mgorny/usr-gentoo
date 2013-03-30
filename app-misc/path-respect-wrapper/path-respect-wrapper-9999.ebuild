@@ -23,26 +23,9 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 
 RDEPEND="sys-process/procps"
+DEPEND=${RDEPEND}
 
 #if LIVE
 SRC_URI=
 KEYWORDS=
 #endif
-
-src_configure() {
-	:
-}
-
-src_compile() {
-	:
-}
-
-src_test() {
-	:
-}
-
-src_install() {
-	insinto /usr/src/${PN}
-	doins -r aclocal.m4 configure{.ac,} Makefile.{am,in} \
-		config.h.in src build-aux
-}
