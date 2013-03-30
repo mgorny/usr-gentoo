@@ -4,7 +4,16 @@ RCS file: /var/cvsroot/gentoo-x86/sys-apps/kmod/kmod-12-r1.ebuild,v
 retrieving revision 1.18
 diff -u -B -r1.18 kmod-12-r1.ebuild
 --- kmod-12-r1.ebuild	26 Mar 2013 08:14:18 -0000	1.18
-+++ kmod-12-r1.ebuild	30 Mar 2013 13:24:29 -0000
++++ kmod-12-r1.ebuild	30 Mar 2013 13:33:51 -0000
+@@ -6,7 +6,7 @@
+ 
+ VIRTUAL_MODUTILS=1
+ 
+-inherit autotools eutils libtool multilib linux-mod
++inherit autotools eutils libtool multilib linux-mod usr-gentoo
+ 
+ if [[ ${PV} == 9999 ]]; then
+ 	EGIT_REPO_URI="git://git.kernel.org/pub/scm/utils/kernel/${PN}/${PN}.git"
 @@ -63,8 +63,6 @@
  {
  	econf \
