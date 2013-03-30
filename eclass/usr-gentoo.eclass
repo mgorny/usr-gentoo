@@ -5,14 +5,14 @@
 DEPEND="app-misc/path-respect-wrapper"
 
 usr_wrap_begin() {
-	if [[ ! -d ${T}/wrap-build ]]; then
-		mkdir "${T}"/wrap-build || die
-		pushd "${T}"/wrap-build >/dev/null || die
+	if [[ ! -d ${T}/usr-wrap-build ]]; then
+		mkdir "${T}"/usr-wrap-build || die
+		pushd "${T}"/usr-wrap-build >/dev/null || die
 
 		einfo 'Building path-respect-wrappers ...'
-		sh /usr/src/path-respect-wrapper/configure -C || die
+		echo 'LDLIBS = -lpath-respect-wrapper' > Makefile
 	else
-		pushd "${T}"/wrap-build >/dev/null || die
+		pushd "${T}"/usr-wrap-build >/dev/null || die
 	fi
 }
 
@@ -27,15 +27,16 @@ usr_wrap_bin() {
 
 	local app
 	for app; do
-		cat > app.c <<-EOF
+		cat > ${app}.c <<-EOF
 			const char* const real_path = "/usr/bin/${app}";
 			const char* const real_name = "/bin/${app}";
 		EOF
 
-		einfo "Wrapping /bin/${app}"
-		emake
-		newbin app ${app}
+		echo "all: ${app}" >> Makefile
 	done
+
+	emake
+	dobin "${@}"
 
 	usr_wrap_end
 }
@@ -47,15 +48,16 @@ usr_wrap_sbin() {
 
 	local app
 	for app; do
-		cat > app.c <<-EOF
+		cat > ${app}.c <<-EOF
 			const char* const real_path = "/usr/sbin/${app}";
 			const char* const real_name = "/sbin/${app}";
 		EOF
 
-		einfo "Wrapping /sbin/${app}"
-		emake
-		newsbin app ${app}
+		echo "all: ${app}" >> Makefile
 	done
+
+	emake
+	dosbin "${@}"
 
 	usr_wrap_end
 }
