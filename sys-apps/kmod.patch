@@ -1,0 +1,36 @@
+Index: kmod-12-r1.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/kmod/kmod-12-r1.ebuild,v
+retrieving revision 1.18
+diff -u -B -r1.18 kmod-12-r1.ebuild
+--- kmod-12-r1.ebuild	26 Mar 2013 08:14:18 -0000	1.18
++++ kmod-12-r1.ebuild	30 Mar 2013 13:24:29 -0000
+@@ -63,8 +63,6 @@
+ {
+ 	econf \
+ 		--disable-silent-rules \
+-		--bindir=/bin \
+-		--with-rootlibdir=/$(get_libdir) \
+ 		$(use_enable static-libs static) \
+ 		$(use_enable tools) \
+ 		$(use_enable debug) \
+@@ -81,15 +79,17 @@
+ 	if use tools; then
+ 		local bincmd sbincmd
+ 		for sbincmd in depmod insmod lsmod modinfo modprobe rmmod; do
+-			dosym /bin/kmod /sbin/${sbincmd}
++			dosym ../bin/kmod /usr/sbin/${sbincmd}
+ 		done
+ 
+ 		# These are also usable as normal user
+ 		for bincmd in lsmod modinfo; do
+-			dosym kmod /bin/${bincmd}
++			dosym kmod /usr/bin/${bincmd}
+ 		done
+ 	fi
+ 
++	usr_wrap_all
++
+ 	cat <<-EOF > "${T}"/usb-load-ehci-first.conf
+ 	softdep uhci_hcd pre: ehci_hcd
+ 	softdep ohci_hcd pre: ehci_hcd
