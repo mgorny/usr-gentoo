@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+inherit toolchain-funcs
+
 DEPEND="app-misc/path-respect-wrapper"
 
 usr_wrap_begin() {
@@ -10,7 +12,7 @@ usr_wrap_begin() {
 		pushd "${T}"/usr-wrap-build >/dev/null || die
 
 		einfo 'Building path-respect-wrappers ...'
-		echo 'LDLIBS = -lpath-respect-wrapper' > Makefile
+		echo 'LDLIBS = -lpath-respect-wrapper' > Makefile || die
 	else
 		pushd "${T}"/usr-wrap-build >/dev/null || die
 	fi
@@ -27,16 +29,16 @@ usr_wrap_bin() {
 
 	local app
 	for app; do
-		cat > ${app}.c <<-EOF
+		cat > ${app}.c <<-EOF || die
 			const char* const real_path = "/usr/bin/${app}";
 			const char* const real_name = "/bin/${app}";
 		EOF
 
-		echo "all: ${app}" >> Makefile
+		echo "all: ${app}" >> Makefile || die
 	done
 
-	emake
-	dobin "${@}"
+	emake CC="$(tc-getCC)" || die
+	dobin "${@}" || die
 
 	usr_wrap_end
 }
@@ -48,16 +50,16 @@ usr_wrap_sbin() {
 
 	local app
 	for app; do
-		cat > ${app}.c <<-EOF
+		cat > ${app}.c <<-EOF || die
 			const char* const real_path = "/usr/sbin/${app}";
 			const char* const real_name = "/sbin/${app}";
 		EOF
 
-		echo "all: ${app}" >> Makefile
+		echo "all: ${app}" >> Makefile || die
 	done
 
-	emake
-	dosbin "${@}"
+	emake CC="$(tc-getCC)" || die
+	dosbin "${@}" || die
 
 	usr_wrap_end
 }
