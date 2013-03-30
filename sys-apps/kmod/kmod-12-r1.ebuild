@@ -6,7 +6,7 @@ EAPI=4
 
 VIRTUAL_MODUTILS=1
 
-inherit autotools eutils libtool multilib linux-mod
+inherit autotools eutils libtool multilib linux-mod usr-gentoo
 
 if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="git://git.kernel.org/pub/scm/utils/kernel/${PN}/${PN}.git"
