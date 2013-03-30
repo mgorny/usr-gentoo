@@ -26,6 +26,7 @@ main() {
 	local log_file=${repo_root}/scripts/update.log
 	exec 3>${log_file}
 
+	umask 022
 	cd "${repo_root}" || die 'cd repo-root failed.'
 	local x
 	for x in */*.patch; do
