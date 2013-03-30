@@ -59,3 +59,16 @@ usr_wrap_sbin() {
 
 	usr_wrap_end
 }
+
+# wrap all /usr/bin/* and /usr/sbin/*
+usr_wrap_all() {
+	if [[ -d ${ED}/usr/bin ]]; then
+		cd "${ED}"/usr/bin || die
+		usr_wrap_bin *
+	fi
+
+	if [[ -d ${ED}/usr/sbin ]]; then
+		cd "${ED}"/usr/sbin || die
+		usr_wrap_sbin *
+	fi
+}
