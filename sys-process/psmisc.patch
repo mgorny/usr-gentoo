@@ -1,0 +1,25 @@
+Index: psmisc-22.20.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-process/psmisc/psmisc-22.20.ebuild,v
+retrieving revision 1.15
+diff -u -B -r1.15 psmisc-22.20.ebuild
+--- psmisc-22.20.ebuild	24 Feb 2013 17:53:00 -0000	1.15
++++ psmisc-22.20.ebuild	30 Mar 2013 12:42:12 -0000
+@@ -4,7 +4,7 @@
+ 
+ EAPI="4"
+ 
+-inherit eutils
++inherit eutils usr-gentoo
+ 
+ DESCRIPTION="A set of tools that use the proc filesystem"
+ HOMEPAGE="http://psmisc.sourceforge.net/"
+@@ -51,6 +51,6 @@
+ 	[[ -e ${ED}/usr/bin/peekfd ]] || rm -f "${ED}"/usr/share/man/man1/peekfd.1
+ 
+ 	# fuser is needed by init.d scripts; use * wildcard for #458250
+-	dodir /bin
+-	mv "${ED}"/usr/bin/*fuser "${ED}"/bin || die
++	cd "${ED}"/usr/bin || die
++	usr_wrap_bin *fuser
+ }
