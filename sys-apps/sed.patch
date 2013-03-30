@@ -1,0 +1,38 @@
+Index: sed-4.2.2.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/sed/sed-4.2.2.ebuild,v
+retrieving revision 1.1
+diff -u -B -d -u -p -r1.1 sed-4.2.2.ebuild
+--- sed-4.2.2.ebuild	25 Dec 2012 03:33:00 -0000	1.1
++++ sed-4.2.2.ebuild	30 Mar 2013 22:21:24 -0000
+@@ -2,7 +2,7 @@
+ # Distributed under the terms of the GNU General Public License v2
+ # $Header: /var/cvsroot/gentoo-x86/sys-apps/sed/sed-4.2.2.ebuild,v 1.1 2012/12/25 03:33:00 vapier Exp $
+ 
+-inherit eutils flag-o-matic toolchain-funcs
++inherit eutils flag-o-matic toolchain-funcs usr-gentoo
+ 
+ DESCRIPTION="Super-useful stream editor"
+ HOMEPAGE="http://sed.sourceforge.net/"
+@@ -47,14 +47,12 @@ src_compile() {
+ 	local myconf= bindir=/bin
+ 	if ! use userland_GNU ; then
+ 		myconf="--program-prefix=g"
+-		bindir=/usr/bin
+ 	fi
+ 
+ 	export ac_cv_search_setfilecon=$(usex selinux -lselinux)
+ 	export ac_cv_header_selinux_{context,selinux}_h=$(usex selinux)
+ 	use static && append-ldflags -static
+ 	econf \
+-		--bindir=${bindir} \
+ 		$(use_enable acl) \
+ 		$(use_enable nls) \
+ 		${myconf}
+@@ -66,4 +64,6 @@ src_install() {
+ 	dodoc NEWS README* THANKS AUTHORS BUGS ChangeLog
+ 	docinto examples
+ 	dodoc "${FILESDIR}"/{dos2unix,unix2dos}
++
++	usr_wrap_bin sed
+ }

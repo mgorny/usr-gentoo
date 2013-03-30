@@ -1,0 +1,33 @@
+Index: acl-2.2.51.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/acl/acl-2.2.51.ebuild,v
+retrieving revision 1.10
+diff -u -B -d -u -p -r1.10 acl-2.2.51.ebuild
+--- acl-2.2.51.ebuild	19 Feb 2013 05:08:46 -0000	1.10
++++ acl-2.2.51.ebuild	30 Mar 2013 21:47:58 -0000
+@@ -4,7 +4,7 @@
+ 
+ EAPI="4"
+ 
+-inherit eutils toolchain-funcs
++inherit eutils toolchain-funcs usr-gentoo
+ 
+ DESCRIPTION="access control list utilities, libraries and headers"
+ HOMEPAGE="http://savannah.nongnu.org/projects/acl"
+@@ -50,14 +50,12 @@ src_configure() {
+ 	econf \
+ 		$(use_enable nls gettext) \
+ 		--enable-shared $(use_enable static-libs static) \
+-		--libexecdir="${EPREFIX}"/usr/$(get_libdir) \
+-		--bindir="${EPREFIX}"/bin
++		--libexecdir="${EPREFIX}"/usr/$(get_libdir)
+ }
+ 
+ src_install() {
+ 	emake DIST_ROOT="${D}" install install-dev install-lib || die
+ 	use static-libs || find "${D}" -name '*.la' -delete
+ 
+-	# move shared libs to /
+-	gen_usr_ldscript -a acl
++	usr_wrap_all
+ }
