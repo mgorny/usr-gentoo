@@ -4,13 +4,6 @@
 
 EAPI=5
 
-#if LIVE
-AUTOTOOLS_AUTORECONF=yes
-EGIT_REPO_URI="http://bitbucket.org/mgorny/${PN}.git"
-
-inherit git-2
-#endif
-
 inherit autotools-utils
 
 DESCRIPTION="Wrapper for apps moved to /usr, checking whether PATH is respected"
@@ -24,8 +17,3 @@ IUSE=""
 
 RDEPEND="sys-process/procps"
 DEPEND=${RDEPEND}
-#if LIVE
-
-SRC_URI=
-KEYWORDS=
-#endif
