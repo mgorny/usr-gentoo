@@ -1,0 +1,24 @@
+Index: xz-utils-5.0.4-r1.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/app-arch/xz-utils/xz-utils-5.0.4-r1.ebuild,v
+retrieving revision 1.9
+diff -u -B -r1.9 xz-utils-5.0.4-r1.ebuild
+--- xz-utils-5.0.4-r1.ebuild	17 Feb 2013 19:48:08 -0000	1.9
++++ xz-utils-5.0.4-r1.ebuild	30 Mar 2013 13:35:54 -0000
+@@ -7,7 +7,7 @@
+ 
+ EAPI="4"
+ 
+-inherit eutils multilib toolchain-funcs libtool
++inherit eutils multilib toolchain-funcs libtool usr-gentoo
+ 
+ if [[ ${PV} == "9999" ]] ; then
+ 	EGIT_REPO_URI="http://git.tukaani.org/xz.git"
+@@ -53,7 +53,6 @@
+ 
+ src_install() {
+ 	default
+-	gen_usr_ldscript -a lzma
+ 	prune_libtool_files --all
+ 	rm "${ED}"/usr/share/doc/xz/COPYING* || die
+ 	mv "${ED}"/usr/share/doc/{xz,${PF}} || die
