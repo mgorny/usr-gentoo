@@ -1,0 +1,32 @@
+Index: debianutils-4.3.4.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/debianutils/debianutils-4.3.4.ebuild,v
+retrieving revision 1.12
+diff -u -B -d -u -p -r1.12 debianutils-4.3.4.ebuild
+--- debianutils-4.3.4.ebuild	24 Feb 2013 18:02:44 -0000	1.12
++++ debianutils-4.3.4.ebuild	31 Mar 2013 09:46:10 -0000
+@@ -4,7 +4,7 @@
+ 
+ EAPI=4
+ 
+-inherit eutils flag-o-matic
++inherit eutils flag-o-matic usr-gentoo
+ 
+ DESCRIPTION="A selection of tools from Debian"
+ HOMEPAGE="http://packages.qa.debian.org/d/debianutils.html"
+@@ -27,13 +27,13 @@ src_configure() {
+ }
+ 
+ src_install() {
+-	into /
+ 	dobin tempfile run-parts
++	usr_wrap_bin tempfile run-parts
+ 	if use kernel_linux ; then
+ 		dosbin installkernel
++		usr_wrap_sbin installkernel
+ 	fi
+ 
+-	into /usr
+ 	dosbin savelog
+ 
+ 	doman tempfile.1 run-parts.8 savelog.8

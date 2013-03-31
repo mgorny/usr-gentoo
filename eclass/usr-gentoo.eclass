@@ -67,12 +67,36 @@ usr_wrap_sbin() {
 # wrap all /usr/bin/* and /usr/sbin/*
 usr_wrap_all() {
 	if [[ -d ${ED}/usr/bin ]]; then
-		cd "${ED}"/usr/bin || die
+		pushd "${ED}"/usr/bin >/dev/null || die
 		usr_wrap_bin *
+		popd >/dev/null || die
 	fi
 
 	if [[ -d ${ED}/usr/sbin ]]; then
-		cd "${ED}"/usr/sbin || die
+		pushd "${ED}"/usr/sbin >/dev/null || die
 		usr_wrap_sbin *
+		popd >/dev/null || die
+	fi
+}
+
+# in case build system was broken and unoverridable
+usr_move_all() {
+	local f
+	if [[ -d ${ED}/bin ]]; then
+		pushd "${ED}"/bin >/dev/null || die
+		f=( * )
+		dodir /usr/bin
+		mv "${f[@]}" "${ED}"/usr/bin || die
+		usr_wrap_bin "${f[@]}"
+		popd >/dev/null || die
+	fi
+
+	if [[ -d ${ED}/sbin ]]; then
+		pushd "${ED}"/sbin >/dev/null || die
+		f=( * )
+		dodir /usr/sbin
+		mv "${f[@]}" "${ED}"/usr/sbin || die
+		usr_wrap_sbin "${f[@]}"
+		popd >/dev/null || die
 	fi
 }

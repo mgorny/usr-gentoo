@@ -1,0 +1,28 @@
+Index: libcap-2.22-r1.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/sys-libs/libcap/libcap-2.22-r1.ebuild,v
+retrieving revision 1.2
+diff -u -B -r1.2 libcap-2.22-r1.ebuild
+--- libcap-2.22-r1.ebuild	17 Feb 2013 07:58:20 -0000	1.2
++++ libcap-2.22-r1.ebuild	31 Mar 2013 21:24:04 -0000
+@@ -4,7 +4,7 @@
+ 
+ EAPI="4"
+ 
+-inherit eutils multilib toolchain-funcs pam
++inherit eutils multilib toolchain-funcs pam usr-gentoo
+ 
+ DESCRIPTION="POSIX 1003.1e capabilities"
+ HOMEPAGE="http://www.friedhoff.org/posixfilecaps.html"
+@@ -42,10 +42,8 @@
+ 	# no configure, needs explicit install line #444724#c3
+ 	emake install DESTDIR="${ED}"
+ 
+-	gen_usr_ldscript -a cap
++	usr_move_all
+ 
+-	rm -rf "${ED}"/usr/$(get_libdir)/security
+-	dopammod pam_cap/pam_cap.so
+ 	dopamsecurity '' pam_cap/capability.conf
+ 
+ 	dodoc CHANGELOG README doc/capability.notes
