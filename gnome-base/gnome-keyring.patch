@@ -1,0 +1,16 @@
+Index: gnome-keyring-3.8.0.ebuild
+===================================================================
+RCS file: /var/cvsroot/gentoo-x86/gnome-base/gnome-keyring/gnome-keyring-3.8.0.ebuild,v
+retrieving revision 1.2
+diff -u -B -r1.2 gnome-keyring-3.8.0.ebuild
+--- gnome-keyring-3.8.0.ebuild	30 Mar 2013 23:01:13 -0000	1.2
++++ gnome-keyring-3.8.0.ebuild	31 Mar 2013 21:21:34 -0000
+@@ -61,7 +61,7 @@
+ 	gnome2_src_configure \
+ 		$(use_with caps libcap-ng) \
+ 		$(use_enable pam) \
+-		$(use_with pam pam-dir $(getpam_mod_dir)) \
++		$(use_with pam pam-dir /usr/$(getpam_mod_dir)) \
+ 		$(use_enable selinux) \
+ 		--with-root-certs="${EPREFIX}"/etc/ssl/certs/ \
+ 		--with-ca-certificates="${EPREFIX}"/etc/ssl/certs/ca-certificates.crt \
