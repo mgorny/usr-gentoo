@@ -10,6 +10,8 @@ die() {
 }
 
 main() {
+	printf "\033[1mLooking for repositories ...\033[0m\n" >&2
+
 	if ! gentoopmq --version &>/dev/null; then
 		die 'gentoopmq required (app-portage/gentoopm)!'
 	fi
@@ -23,8 +25,15 @@ main() {
 		die 'Unable to find usr-gentoo repository (self).'
 	fi
 
-	local log_file=${repo_root}/scripts/update.log
+	local log_file=${repo_root}/scripts/update-patch.log
 	exec 3>${log_file}
+
+	local out_file=${repo_root}/scripts/update.log
+	local out_file_old=${out_file}~
+	if [[ -f ${out_file} ]]; then
+		mv "${out_file}" "${out_file_old}" || die 'log rotation failed.'
+	fi
+	exec 2> >(tee "${out_file}" >&2)
 
 	umask 022
 	cd "${repo_root}" || die 'cd repo-root failed.'
@@ -42,7 +51,7 @@ main() {
 		fi
 
 		printf "\033[1m${p}\033[0m\n" >&2
-		echo "${p}" >&3
+		echo "*** ${p} ***" >&3
 
 		rm -rf "${repo_path}"
 		cp -r "${gx86_path}" "${repo_path}" || die "cp ${p} failed."
@@ -64,7 +73,12 @@ main() {
 	printf '\n\033[1mUpdating Manifests ...\033[0m\n' >&2
 
 	cd "${repo_root}" || die 'cd repo-root failed.'
-	exec repoman manifest
+	repoman manifest
+
+	if [[ -f ${out_file_old} ]]; then
+		printf '\n\033[1mDiffing ...\033[0m\n' >&2
+		diff -dup "${out_file_old}" "${out_file}"
+	fi
 }
 
 main "${@}"
