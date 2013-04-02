@@ -1,11 +1,11 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-200.ebuild,v 1.4 2013/03/31 21:18:56 mgorny Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-200-r1.ebuild,v 1.1 2013/04/02 12:28:53 mgorny Exp $
 
 EAPI=5
 
 PYTHON_COMPAT=( python2_7 )
-inherit autotools-utils linux-info multilib python-single-r1 systemd toolchain-funcs udev user
+inherit autotools-utils linux-info multilib python-single-r1 systemd toolchain-funcs udev user usr-gentoo
 
 DESCRIPTION="System and service manager for Linux"
 HOMEPAGE="http://www.freedesktop.org/wiki/Software/systemd"
@@ -107,10 +107,6 @@ src_configure() {
 	autotools-utils_src_configure
 }
 
-src_compile() {
-	autotools-utils_src_compile
-}
-
 src_install() {
 	autotools-utils_src_install -j1 \
 		dist_udevhwdb_DATA=
@@ -156,6 +152,10 @@ src_install() {
 	do
 		[[ -x ${D}${x} ]] || die "${x} symlink broken, aborting."
 	done
+
+	usr_wrap_bin systemadm udevadm
+	path-compat-mkwrap /sbin/udevadm /usr/bin/udevadm
+	path-compat-mkwrap /sbin/udevd /usr/lib/systemd/systemd-udevd
 }
 
 pkg_preinst() {
