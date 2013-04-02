@@ -4,17 +4,10 @@
 
 EAPI=5
 
-#if LIVE
-AUTOTOOLS_AUTORECONF=yes
-EGIT_REPO_URI="http://bitbucket.org/mgorny/${PN}.git"
-
-inherit git-2
-#endif
-
 inherit autotools-utils
 
-DESCRIPTION="Wrapper for apps moved to /usr, checking whether PATH is respected"
-HOMEPAGE="https://bitbucket.org/mgorny/path-respect-wrapper"
+DESCRIPTION="Wrapper complaining when programs are run via compatibility paths"
+HOMEPAGE="https://bitbucket.org/mgorny/path-compat-wrapper"
 SRC_URI="mirror://bitbucket/mgorny/${PN}/downloads/${P}.tar.bz2"
 
 LICENSE="BSD"
@@ -24,11 +17,6 @@ IUSE="systemd"
 
 RDEPEND="systemd? ( sys-apps/systemd )"
 DEPEND=${RDEPEND}
-
-#if LIVE
-SRC_URI=
-KEYWORDS=
-#endif
 
 src_configure() {
 	local myeconfargs=(

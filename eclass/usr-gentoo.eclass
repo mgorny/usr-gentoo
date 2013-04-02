@@ -4,15 +4,15 @@
 
 inherit toolchain-funcs
 
-DEPEND="app-misc/path-respect-wrapper"
+DEPEND="app-misc/path-compat-wrapper"
 
 usr_wrap_begin() {
 	if [[ ! -d ${T}/usr-wrap-build ]]; then
 		mkdir "${T}"/usr-wrap-build || die
 		pushd "${T}"/usr-wrap-build >/dev/null || die
 
-		einfo 'Building path-respect-wrappers ...'
-		echo 'LDLIBS = -lpath-respect-wrapper' > Makefile || die
+		einfo 'Building compatibility wrappers ...'
+		echo 'LDLIBS = -lpath-compat-wrapper' > Makefile || die
 	else
 		pushd "${T}"/usr-wrap-build >/dev/null || die
 	fi
@@ -30,8 +30,8 @@ usr_wrap_bin() {
 	local app
 	for app; do
 		cat > ${app}.c <<-EOF || die
-			const char* const real_path = "/usr/bin/${app}";
-			const char* const real_name = "/bin/${app}";
+			const char* const new_path = "/usr/bin/${app}";
+			const char* const old_path = "/bin/${app}";
 		EOF
 
 		echo "all: ${app}" >> Makefile || die
@@ -51,8 +51,8 @@ usr_wrap_sbin() {
 	local app
 	for app; do
 		cat > ${app}.c <<-EOF || die
-			const char* const real_path = "/usr/sbin/${app}";
-			const char* const real_name = "/sbin/${app}";
+			const char* const new_path = "/usr/sbin/${app}";
+			const char* const old_path = "/sbin/${app}";
 		EOF
 
 		echo "all: ${app}" >> Makefile || die
