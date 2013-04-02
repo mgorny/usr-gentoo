@@ -1,20 +1,20 @@
-Index: systemd-200.ebuild
+Index: systemd-200-r1.ebuild
 ===================================================================
-RCS file: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-200.ebuild,v
-retrieving revision 1.4
-diff -u -B -d -u -p -r1.4 systemd-200.ebuild
---- systemd-200.ebuild	31 Mar 2013 21:18:56 -0000	1.4
-+++ systemd-200.ebuild	31 Mar 2013 21:20:10 -0000
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-200-r1.ebuild,v
+retrieving revision 1.1
+diff -u -B -r1.1 systemd-200-r1.ebuild
+--- systemd-200-r1.ebuild	2 Apr 2013 12:28:53 -0000	1.1
++++ systemd-200-r1.ebuild	2 Apr 2013 15:06:22 -0000
 @@ -5,7 +5,7 @@
  EAPI=5
  
  PYTHON_COMPAT=( python2_7 )
 -inherit autotools-utils linux-info multilib pam python-single-r1 systemd toolchain-funcs udev user
-+inherit autotools-utils linux-info multilib python-single-r1 systemd toolchain-funcs udev user
++inherit autotools-utils linux-info multilib python-single-r1 systemd toolchain-funcs udev user usr-gentoo
  
  DESCRIPTION="System and service manager for Linux"
  HOMEPAGE="http://www.freedesktop.org/wiki/Software/systemd"
-@@ -71,8 +71,6 @@ src_configure() {
+@@ -71,8 +71,6 @@
  		# install everything to /usr
  		--with-rootprefix=/usr
  		--with-rootlibdir=/usr/$(get_libdir)
@@ -23,7 +23,7 @@ diff -u -B -d -u -p -r1.4 systemd-200.ebuild
  		# make sure we get /bin:/sbin in $PATH
  		--enable-split-usr
  		# disable sysv compatibility
-@@ -103,9 +101,6 @@ src_configure() {
+@@ -103,32 +101,16 @@
  		$(use_enable xattr)
  	)
  
@@ -33,31 +33,30 @@ diff -u -B -d -u -p -r1.4 systemd-200.ebuild
  	# Work around bug 463846.
  	tc-export CC
  
-@@ -113,22 +108,13 @@ src_configure() {
+ 	autotools-utils_src_configure
  }
  
- src_compile() {
+-src_compile() {
 -	autotools-utils_src_compile \
 -		udevlibexecdir="${MY_UDEVDIR}"
-+	autotools-utils_src_compile
- }
- 
+-}
+-
  src_install() {
  	autotools-utils_src_install -j1 \
 -		udevlibexecdir="${MY_UDEVDIR}" \
  		dist_udevhwdb_DATA=
  
 -	# keep udev working without initramfs, for openrc compat
--	dodir /sbin
+-	dodir /bin /sbin
 -	mv "${D}"/usr/lib/systemd/systemd-udevd "${D}"/sbin/udevd || die
--	mv "${D}"/usr/bin/udevadm "${D}"/sbin/udevadm || die
+-	mv "${D}"/usr/bin/udevadm "${D}"/bin/udevadm || die
 -	dosym ../../../sbin/udevd /usr/lib/systemd/systemd-udevd
--	dosym ../../sbin/udevadm /usr/bin/udevadm
+-	dosym ../../bin/udevadm /usr/bin/udevadm
 -
  	# zsh completion
  	insinto /usr/share/zsh/site-functions
  	newins shell-completion/systemd-zsh-completion.zsh "_${PN}"
-@@ -166,8 +152,7 @@ src_install() {
+@@ -166,11 +148,14 @@
  
  	# Check whether we won't break user's system.
  	local x
@@ -67,3 +66,10 @@ diff -u -B -d -u -p -r1.4 systemd-200.ebuild
  	do
  		[[ -x ${D}${x} ]] || die "${x} symlink broken, aborting."
  	done
++
++	usr_wrap_bin systemadm udevadm
++	path-compat-mkwrap /sbin/udevadm /usr/bin/udevadm
++	path-compat-mkwrap /sbin/udevd /usr/lib/systemd/systemd-udevd
+ }
+ 
+ pkg_preinst() {
