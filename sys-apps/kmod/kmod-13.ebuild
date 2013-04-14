@@ -1,8 +1,8 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/kmod/kmod-12-r1.ebuild,v 1.18 2013/03/26 08:14:18 ssuominen Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/kmod/kmod-13.ebuild,v 1.2 2013/04/10 03:12:15 williamh Exp $
 
-EAPI=4
+EAPI=5
 
 VIRTUAL_MODUTILS=1
 
@@ -13,7 +13,7 @@ if [[ ${PV} == 9999 ]]; then
 	inherit git-2
 else
 	SRC_URI="mirror://kernel/linux/utils/kernel/kmod/${P}.tar.xz"
-	KEYWORDS="alpha amd64 arm hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86"
+	KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sh ~sparc ~x86"
 fi
 
 DESCRIPTION="library and tools for managing linux kernel modules"
@@ -62,7 +62,6 @@ src_prepare()
 src_configure()
 {
 	econf \
-		--disable-silent-rules \
 		$(use_enable static-libs static) \
 		$(use_enable tools) \
 		$(use_enable debug) \

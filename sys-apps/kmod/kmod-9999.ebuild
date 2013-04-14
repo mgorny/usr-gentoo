@@ -1,8 +1,8 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/kmod/kmod-9999.ebuild,v 1.52 2013/03/26 08:14:18 ssuominen Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/kmod/kmod-9999.ebuild,v 1.54 2013/04/10 03:12:15 williamh Exp $
 
-EAPI=4
+EAPI=5
 
 VIRTUAL_MODUTILS=1
 
@@ -62,7 +62,6 @@ src_prepare()
 src_configure()
 {
 	econf \
-		--disable-silent-rules \
 		$(use_enable static-libs static) \
 		$(use_enable tools) \
 		$(use_enable debug) \
