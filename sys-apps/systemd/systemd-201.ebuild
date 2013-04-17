@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-200-r1.ebuild,v 1.3 2013/04/06 01:39:15 floppym Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-201.ebuild,v 1.6 2013/04/17 11:01:30 mgorny Exp $
 
 EAPI=5
 
@@ -14,8 +14,8 @@ SRC_URI="http://www.freedesktop.org/software/systemd/${P}.tar.xz"
 LICENSE="GPL-2 LGPL-2.1 MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~ppc64 ~x86"
-IUSE="acl audit cryptsetup doc gcrypt gudev http
-	introspection +kmod lzma openrc pam python qrcode selinux static-libs
+IUSE="acl audit cryptsetup doc gcrypt gudev http introspection keymap
+	+kmod lzma openrc pam policykit python qrcode selinux static-libs
 	tcpd vanilla xattr"
 
 MINKV="2.6.39"
@@ -43,6 +43,7 @@ COMMON_DEPEND=">=sys-apps/dbus-1.6.8-r1
 RDEPEND="${COMMON_DEPEND}
 	>=sys-apps/baselayout-2.2
 	openrc? ( >=sys-fs/udev-init-scripts-25 )
+	policykit? ( sys-auth/polkit )
 	|| (
 		>=sys-apps/util-linux-2.22
 		<sys-apps/sysvinit-2.88-r4
@@ -53,25 +54,33 @@ RDEPEND="${COMMON_DEPEND}
 
 PDEPEND=">=sys-apps/hwids-20130326.1[udev]"
 
-# sys-fs/quota is necessary to store correct paths in unit files
 DEPEND="${COMMON_DEPEND}
 	app-arch/xz-utils
 	app-text/docbook-xsl-stylesheets
 	dev-libs/libxslt
 	dev-util/gperf
 	>=dev-util/intltool-0.50
-	sys-fs/quota
 	>=sys-kernel/linux-headers-${MINKV}
 	virtual/pkgconfig
 	doc? ( >=dev-util/gtk-doc-1.18 )"
+
+pkg_pretend() {
+	local CONFIG_CHECK="~AUTOFS4_FS ~BLK_DEV_BSG ~CGROUPS ~DEVTMPFS
+		~FANOTIFY ~HOTPLUG ~INOTIFY_USER ~IPV6 ~NET ~PROC_FS ~SIGNALFD
+		~SYSFS ~!IDE ~!SYSFS_DEPRECATED ~!SYSFS_DEPRECATED_V2"
+
+	if [[ ${MERGE_TYPE} != buildonly ]]; then
+		if kernel_is -lt ${MINKV//./ }; then
+			ewarn "Kernel version at least ${MINKV} required"
+		fi
+		check_extra_config
+	fi
+}
 
 src_configure() {
 	local myeconfargs=(
 		--localstatedir=/var
 		--with-firmware-path="/lib/firmware/updates:/lib/firmware"
-		# install everything to /usr
-		--with-rootprefix=/usr
-		--with-rootlibdir=/usr/$(get_libdir)
 		# make sure we get /bin:/sbin in $PATH
 		--enable-split-usr
 		# disable sysv compatibility
@@ -80,8 +89,8 @@ src_configure() {
 		# just text files
 		--enable-polkit
 		# no deps
-		--enable-keymap
 		--enable-efi
+		--enable-ima
 		# optional components/dependencies
 		$(use_enable acl)
 		$(use_enable audit)
@@ -91,15 +100,24 @@ src_configure() {
 		$(use_enable gudev)
 		$(use_enable http microhttpd)
 		$(use_enable introspection)
+		$(use_enable keymap)
 		$(use_enable kmod)
 		$(use_enable lzma xz)
 		$(use_enable pam)
+		$(use_enable policykit polkit)
 		$(use_with python)
 		$(use python && echo PYTHON_CONFIG=/usr/bin/python-config-${EPYTHON#python})
 		$(use_enable qrcode qrencode)
 		$(use_enable selinux)
 		$(use_enable tcpd tcpwrap)
 		$(use_enable xattr)
+
+		# not supported (avoid automagic deps in the future)
+		--disable-chkconfig
+
+		# hardcode a few paths to spare some deps
+		QUOTAON=/usr/sbin/quotaon
+		QUOTACHECK=/usr/sbin/quotacheck
 	)
 
 	# Work around bug 463846.
@@ -157,14 +175,6 @@ src_install() {
 	usr_wrap_bin systemadm udevadm
 	path-compat-mkwrap /sbin/udevadm /usr/bin/udevadm
 	path-compat-mkwrap /sbin/udevd /usr/lib/systemd/systemd-udevd
-}
-
-pkg_preinst() {
-	local CONFIG_CHECK="~AUTOFS4_FS ~BLK_DEV_BSG ~CGROUPS ~DEVTMPFS
-		~FANOTIFY ~HOTPLUG ~INOTIFY_USER ~IPV6 ~NET ~PROC_FS ~SIGNALFD
-		~SYSFS ~!IDE ~!SYSFS_DEPRECATED ~!SYSFS_DEPRECATED_V2"
-	kernel_is -ge ${MINKV//./ } || ewarn "Kernel version at least ${MINKV} required"
-	check_extra_config
 }
 
 optfeature() {
