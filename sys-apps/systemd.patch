@@ -1,10 +1,10 @@
-Index: systemd-200-r1.ebuild
+Index: systemd-201.ebuild
 ===================================================================
-RCS file: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-200-r1.ebuild,v
-retrieving revision 1.1
-diff -u -B -r1.1 systemd-200-r1.ebuild
---- systemd-200-r1.ebuild	2 Apr 2013 12:28:53 -0000	1.1
-+++ systemd-200-r1.ebuild	2 Apr 2013 15:06:22 -0000
+RCS file: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-201.ebuild,v
+retrieving revision 1.6
+diff -u -B -d -u -p -r1.6 systemd-201.ebuild
+--- systemd-201.ebuild	17 Apr 2013 11:01:30 -0000	1.6
++++ systemd-201.ebuild	17 Apr 2013 11:05:47 -0000
 @@ -5,7 +5,7 @@
  EAPI=5
  
@@ -14,17 +14,17 @@ diff -u -B -r1.1 systemd-200-r1.ebuild
  
  DESCRIPTION="System and service manager for Linux"
  HOMEPAGE="http://www.freedesktop.org/wiki/Software/systemd"
-@@ -71,8 +71,6 @@
- 		# install everything to /usr
- 		--with-rootprefix=/usr
- 		--with-rootlibdir=/usr/$(get_libdir)
+@@ -81,8 +81,6 @@ src_configure() {
+ 	local myeconfargs=(
+ 		--localstatedir=/var
+ 		--with-firmware-path="/lib/firmware/updates:/lib/firmware"
 -		# but pam modules have to lie in /lib*
 -		--with-pamlibdir=$(getpam_mod_dir)
  		# make sure we get /bin:/sbin in $PATH
  		--enable-split-usr
  		# disable sysv compatibility
-@@ -103,32 +101,16 @@
- 		$(use_enable xattr)
+@@ -122,32 +120,16 @@ src_configure() {
+ 		QUOTACHECK=/usr/sbin/quotacheck
  	)
  
 -	# Keep using the one where the rules were installed.
@@ -56,7 +56,7 @@ diff -u -B -r1.1 systemd-200-r1.ebuild
  	# zsh completion
  	insinto /usr/share/zsh/site-functions
  	newins shell-completion/systemd-zsh-completion.zsh "_${PN}"
-@@ -166,11 +148,14 @@
+@@ -185,11 +167,14 @@ src_install() {
  
  	# Check whether we won't break user's system.
  	local x
@@ -72,4 +72,4 @@ diff -u -B -r1.1 systemd-200-r1.ebuild
 +	path-compat-mkwrap /sbin/udevd /usr/lib/systemd/systemd-udevd
  }
  
- pkg_preinst() {
+ optfeature() {
