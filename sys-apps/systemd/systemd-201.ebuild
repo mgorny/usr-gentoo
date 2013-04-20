@@ -1,6 +1,6 @@
 # Copyright 1999-2013 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-201.ebuild,v 1.6 2013/04/17 11:01:30 mgorny Exp $
+# $Header: /var/cvsroot/gentoo-x86/sys-apps/systemd/systemd-201.ebuild,v 1.16 2013/04/19 00:25:16 floppym Exp $
 
 EAPI=5
 
@@ -14,8 +14,8 @@ SRC_URI="http://www.freedesktop.org/software/systemd/${P}.tar.xz"
 LICENSE="GPL-2 LGPL-2.1 MIT"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~ppc64 ~x86"
-IUSE="acl audit cryptsetup doc gcrypt gudev http introspection keymap
-	+kmod lzma openrc pam policykit python qrcode selinux static-libs
+IUSE="acl audit cryptsetup doc +firmware-loader gcrypt gudev http introspection
+	keymap +kmod lzma openrc pam policykit python qrcode selinux static-libs
 	tcpd vanilla xattr"
 
 MINKV="2.6.39"
@@ -60,6 +60,7 @@ DEPEND="${COMMON_DEPEND}
 	dev-libs/libxslt
 	dev-util/gperf
 	>=dev-util/intltool-0.50
+	>=sys-devel/gcc-4.6
 	>=sys-kernel/linux-headers-${MINKV}
 	virtual/pkgconfig
 	doc? ( >=dev-util/gtk-doc-1.18 )"
@@ -68,26 +69,45 @@ pkg_pretend() {
 	local CONFIG_CHECK="~AUTOFS4_FS ~BLK_DEV_BSG ~CGROUPS ~DEVTMPFS
 		~FANOTIFY ~HOTPLUG ~INOTIFY_USER ~IPV6 ~NET ~PROC_FS ~SIGNALFD
 		~SYSFS ~!IDE ~!SYSFS_DEPRECATED ~!SYSFS_DEPRECATED_V2"
+#		~!FW_LOADER_USER_HELPER"
+
+	if [[ ${MERGE_TYPE} != binary ]]; then
+		if [[ $(gcc-major-version) -lt 4
+			|| ( $(gcc-major-version) -eq 4 && $(gcc-minor-version) -lt 6 ) ]]
+		then
+			eerror "systemd requires at least gcc 4.6 to build. Please switch the active"
+			eerror "gcc version using gcc-config."
+			die "systemd requires at least gcc 4.6"
+		fi
+	fi
 
 	if [[ ${MERGE_TYPE} != buildonly ]]; then
 		if kernel_is -lt ${MINKV//./ }; then
 			ewarn "Kernel version at least ${MINKV} required"
 		fi
+
+		if ! use firmware-loader && kernel_is -lt 3 8; then
+			ewarn "You seem to be using kernel older than 3.8. Those kernel versions"
+			ewarn "require systemd with USE=firmware-loader to support loading"
+			ewarn "firmware. Missing this flag may cause some hardware not to work."
+		fi
+
 		check_extra_config
 	fi
+}
+
+pkg_setup() {
+	use python && python-single-r1_pkg_setup
 }
 
 src_configure() {
 	local myeconfargs=(
 		--localstatedir=/var
-		--with-firmware-path="/lib/firmware/updates:/lib/firmware"
 		# make sure we get /bin:/sbin in $PATH
 		--enable-split-usr
 		# disable sysv compatibility
 		--with-sysvinit-path=
 		--with-sysvrcnd-path=
-		# just text files
-		--enable-polkit
 		# no deps
 		--enable-efi
 		--enable-ima
@@ -119,6 +139,12 @@ src_configure() {
 		QUOTAON=/usr/sbin/quotaon
 		QUOTACHECK=/usr/sbin/quotacheck
 	)
+
+	if use firmware-loader; then
+		myeconfargs+=(
+			--with-firmware-path="/lib/firmware/updates:/lib/firmware"
+		)
+	fi
 
 	# Work around bug 463846.
 	tc-export CC
